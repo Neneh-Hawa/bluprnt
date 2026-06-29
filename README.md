@@ -146,7 +146,10 @@ This project is actively being developed. Upcoming improvements include:
 - **Image uploads per slide** — attach and position images directly within each slide
 - **Canva-style colour controls** — per-slide background, headline, body, and accent colour pickers with font size and weight controls
 - **Animation transitions in presenter mode** — Fade, Slide, Zoom, and Rise CSS transitions between slides during live presentations
-- **Improved PPTX export** — richer formatting, image embedding, and transition support in exported PowerPoint files
+- **PPTX slide formatting improvements** — refining element spacing, font sizing, and layout fidelity in exported PowerPoint files
+- **PDF export layout refinement** — improving print CSS for tighter layout accuracy across browsers and PDF viewers
+
+> Export features are functional but currently being refined for optimal layout.
 
 *Last updated: June 2026*
 
