@@ -259,6 +259,62 @@ textarea::placeholder{color:var(--muted);opacity:.55}
   .out-bar{padding:0 14px}.deck-title-bar{font-size:.8rem}
   .obtn{padding:6px 10px;font-size:.8rem}
 }
+
+/* ── PRINT / PDF ── */
+#print-area{display:none}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{height:auto!important}
+  body>*{display:none!important}
+  #print-area{display:block!important;position:absolute;top:0;left:0;width:100%}
+  .print-slide{
+    width:297mm;height:210mm;
+    page-break-after:always;break-after:page;
+    page-break-inside:avoid;break-inside:avoid;
+    box-sizing:border-box;position:relative;overflow:hidden;
+    background:#fff;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact
+  }
+  .print-slide:last-child{page-break-after:auto;break-after:auto}
+  .ps-title-bar{
+    position:absolute;top:0;left:0;right:0;height:18mm;
+    background:#0D9488;display:flex;align-items:center;
+    padding:0 13mm;font-family:Arial,sans-serif;
+    font-size:10pt;font-weight:700;color:#fff;
+    letter-spacing:.08em;text-transform:uppercase
+  }
+  .ps-headline{
+    position:absolute;top:22mm;left:13mm;right:13mm;
+    font-family:Arial,sans-serif;font-size:22pt;font-weight:700;
+    color:#1C2B2B;line-height:1.2
+  }
+  .ps-body{
+    position:absolute;top:60mm;left:13mm;right:13mm;
+    font-family:Arial,sans-serif;font-size:11pt;font-weight:400;
+    color:#1C2B2B;line-height:1.6
+  }
+  .ps-bullets{
+    position:absolute;top:88mm;left:13mm;right:13mm
+  }
+  .ps-bullet{
+    font-family:Arial,sans-serif;font-size:10pt;color:#1C2B2B;
+    margin-bottom:3mm;display:flex;gap:4mm;align-items:flex-start
+  }
+  .ps-bullet-dot{
+    width:4pt;height:4pt;border-radius:50%;background:#0D9488;
+    flex-shrink:0;margin-top:4pt
+  }
+  .ps-stat{
+    position:absolute;bottom:18mm;left:13mm;
+    background:#0D9488;color:#fff;
+    font-family:Arial,sans-serif;font-size:11pt;font-weight:700;
+    padding:3mm 6mm;border-radius:2mm;max-width:140mm
+  }
+  .ps-footer{
+    position:absolute;bottom:6mm;right:13mm;
+    font-family:Arial,sans-serif;font-size:7pt;color:#ccc
+  }
+}
 </style>
 </head>
 <body>
@@ -325,6 +381,7 @@ textarea::placeholder{color:var(--muted);opacity:.55}
       </select>
       <button class="obtn obtn-outline" id="btn-present">▶ Present</button>
       <button class="obtn obtn-solid" id="btn-pptx">↓ PPTX</button>
+      <button class="obtn obtn-outline" id="btn-pdf">↓ PDF</button>
       <button class="obtn obtn-ghost" id="btn-new">＋ New</button>
     </div>
   </header>
@@ -420,6 +477,7 @@ textarea::placeholder{color:var(--muted);opacity:.55}
 </div>
 
 <input type="file" id="file-in" accept="image/*" multiple style="display:none">
+<div id="print-area"></div>
 
 <script>
 /* ── QUESTIONS ── */
@@ -958,6 +1016,7 @@ document.querySelectorAll('.theme-btn').forEach(btn=>{
 /* ── TOP BAR ── */
 document.getElementById('btn-present').addEventListener('click',enterPresenter);
 document.getElementById('btn-pptx').addEventListener('click',downloadPPTX);
+document.getElementById('btn-pdf').addEventListener('click',downloadPDF);
 document.getElementById('btn-new').addEventListener('click',()=>{
   if(!confirm('Start a new pitch? Your current deck will be saved in history.'))return;
   cur=0;Object.keys(ans).forEach(k=>delete ans[k]);_editing=false;
@@ -1006,58 +1065,89 @@ async function downloadPPTX(){
     await loadPptxLib();
     const pptx=new PptxGenJS();
     pptx.layout='LAYOUT_16x9';
+    // 16:9 canvas = 13.33" wide × 7.5" tall, 0.5" margins
+    const M=0.5, W=13.33, H=7.5;
 
     for(const s of deckData.slides){
       const slide=pptx.addSlide();
       slide.background={color:'FFFFFF'};
 
-      // Slide label
-      slide.addText(String(s.id).padStart(2,'0')+'  '+(s.title||'').toUpperCase(),{
-        x:.4,y:.2,w:12.5,h:.35,fontSize:9,color:'0D9488',bold:false,fontFace:'Arial'
+      // ── Title bar: full-width teal strip ──
+      slide.addText((s.title||'').toUpperCase(),{
+        x:0,y:0,w:W,h:.75,
+        fontSize:11,bold:true,color:'FFFFFF',fontFace:'Arial',
+        fill:{color:'0D9488'},valign:'middle',
+        margin:[0,0,0,M]
       });
 
-      // Headline — teal, large
+      // ── Headline: large, dark charcoal, bold ──
       slide.addText(s.headline||'',{
-        x:.4,y:.65,w:12.5,h:1.6,fontSize:30,bold:true,color:'0D9488',fontFace:'Arial',valign:'top'
+        x:M,y:.95,w:W-M*2,h:1.45,
+        fontSize:26,bold:true,color:'1C2B2B',fontFace:'Arial',valign:'top'
       });
 
-      // Body — dark charcoal
+      // ── Body text ──
       if(s.body){
         slide.addText(s.body,{
-          x:.4,y:2.4,w:12.5,h:1.3,fontSize:14,color:'1C2B2B',fontFace:'Arial',valign:'top'
+          x:M,y:2.55,w:W-M*2,h:1.1,
+          fontSize:13,bold:false,color:'1C2B2B',fontFace:'Arial',valign:'top'
         });
       }
 
-      // Bullets — one text element each
+      // ── Bullet points: one element each ──
       if(s.bullets&&s.bullets.length){
-        let by=3.85;
+        let by=3.75;
         for(const b of s.bullets){
-          slide.addText('•  '+b,{x:.5,y:by,w:12.3,h:.42,fontSize:13,color:'1C2B2B',fontFace:'Arial'});
-          by+=0.45;
+          slide.addText([
+            {text:'• ',options:{color:'0D9488',bold:true}},
+            {text:b,options:{color:'1C2B2B',bold:false}}
+          ],{x:M+.1,y:by,w:W-M*2-.1,h:.4,fontSize:12,fontFace:'Arial'});
+          by+=.43;
         }
       }
 
-      // Stat — white text on teal background
+      // ── Stat box: bottom-left, teal fill ──
       if(s.stat){
         slide.addText(s.stat,{
-          x:.4,y:5.9,w:12.5,h:.6,fontSize:14,bold:true,
-          color:'FFFFFF',fontFace:'Arial',
-          fill:{color:'0D9488'},align:'center',valign:'middle'
+          x:M,y:H-1.25,w:8,h:.65,
+          fontSize:13,bold:true,color:'FFFFFF',fontFace:'Arial',
+          fill:{color:'0D9488'},valign:'middle',
+          margin:[0,0,0,.2]
         });
       }
 
-      // Footer
+      // ── Footer: bottom-right ──
       slide.addText('BLUPRNT  ·  '+(deckData.deck_title||''),{
-        x:.4,y:7.1,w:12.5,h:.25,fontSize:8,color:'CCCCCC',fontFace:'Arial',align:'right'
+        x:M,y:H-.35,w:W-M*2,h:.25,
+        fontSize:8,color:'CCCCCC',fontFace:'Arial',align:'right'
       });
     }
 
     await pptx.writeFile({fileName:'BLUPRNT-pitch.pptx'});
   }catch(e){
-    alert('Export failed: '+(e.message||'Unknown error. Check the browser console for details.'));
+    alert('Export failed: '+(e.message||'Unknown error.'));
   }finally{
     btn.textContent=orig;btn.disabled=false;
   }
+}
+
+/* ── PDF EXPORT ── */
+function downloadPDF(){
+  if(!deckData)return;
+  const area=document.getElementById('print-area');
+  area.innerHTML=deckData.slides.map(s=>{
+    const bullets=(s.bullets||[]).map(b=>`<div class="ps-bullet"><span class="ps-bullet-dot"></span><span>${esc(b)}</span></div>`).join('');
+    const stat=s.stat?`<div class="ps-stat">${esc(s.stat)}</div>`:'';
+    return`<div class="print-slide">
+      <div class="ps-title-bar">${esc(s.title||'')}</div>
+      <div class="ps-headline">${esc(s.headline||'')}</div>
+      <div class="ps-body">${esc(s.body||'')}</div>
+      ${bullets?`<div class="ps-bullets">${bullets}</div>`:''}
+      ${stat}
+      <div class="ps-footer">BLUPRNT  ·  ${esc(deckData.deck_title||'')}</div>
+    </div>`;
+  }).join('');
+  window.print();
 }
 
 /* ── PRESENTER ── */
