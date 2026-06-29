@@ -138,6 +138,20 @@ That's it. No `.env` file, no server, no configuration.
 
 ---
 
+## 🚧 In Progress
+
+This project is actively being developed. Upcoming improvements include:
+
+- **Full inline slide editing** — richer in-place text controls across all slide elements
+- **Image uploads per slide** — attach and position images directly within each slide
+- **Canva-style colour controls** — per-slide background, headline, body, and accent colour pickers with font size and weight controls
+- **Animation transitions in presenter mode** — Fade, Slide, Zoom, and Rise CSS transitions between slides during live presentations
+- **Improved PPTX export** — richer formatting, image embedding, and transition support in exported PowerPoint files
+
+*Last updated: June 2026*
+
+---
+
 ## Licence
 
 MIT © 2026 Neneh-Hawa Barrie
