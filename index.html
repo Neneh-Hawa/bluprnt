@@ -965,25 +965,36 @@ document.getElementById('btn-new').addEventListener('click',()=>{
 });
 
 /* ── PPTX EXPORT ── */
-function loadPptxLib(){
-  if(typeof PptxGenJS!=='undefined')return Promise.resolve();
+async function loadPptxLib(){
+  if(typeof PptxGenJS!=='undefined')return;
   const CDNS=[
     'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundled.js',
-    'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundled.js'
+    'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundled.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundled.js'
   ];
-  function tryLoad(urls){
-    if(!urls.length)return Promise.reject(new Error('All CDN sources failed to load PptxGenJS — check your internet connection'));
-    const[url,...rest]=urls;
-    return new Promise((resolve,reject)=>{
-      const s=document.createElement('script');
-      const timer=setTimeout(()=>{s.onload=s.onerror=null;s.remove();reject(new Error('timeout'))},10000);
-      s.onload=()=>{clearTimeout(timer);typeof PptxGenJS!=='undefined'?resolve():reject(new Error('no global'))};
-      s.onerror=()=>{clearTimeout(timer);s.remove();reject(new Error('load error'))};
-      s.src=url;
-      document.head.appendChild(s);
-    }).catch(()=>tryLoad(rest));
+  let lastErr='';
+  for(const url of CDNS){
+    try{
+      const ctrl=new AbortController();
+      const timer=setTimeout(()=>ctrl.abort(),10000);
+      const resp=await fetch(url,{signal:ctrl.signal});
+      clearTimeout(timer);
+      if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
+      const code=await resp.text();
+      const blob=new Blob([code],{type:'application/javascript'});
+      const blobUrl=URL.createObjectURL(blob);
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.onload=res;s.onerror=()=>rej(new Error('script exec failed'));
+        s.src=blobUrl;document.head.appendChild(s);
+        setTimeout(()=>rej(new Error('script timeout')),8000);
+      });
+      URL.revokeObjectURL(blobUrl);
+      if(typeof PptxGenJS!=='undefined')return;
+      throw new Error('PptxGenJS not defined after load');
+    }catch(e){lastErr=e.message;continue;}
   }
-  return tryLoad(CDNS);
+  throw new Error('Could not load PptxGenJS from any source. Last error: '+lastErr);
 }
 
 async function downloadPPTX(){
