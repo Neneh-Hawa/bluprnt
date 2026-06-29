@@ -267,53 +267,86 @@ textarea::placeholder{color:var(--muted);opacity:.55}
   html,body{height:auto!important}
   body>*{display:none!important}
   #print-area{display:block!important;position:absolute;top:0;left:0;width:100%}
-  .print-slide{
+
+  .print-page{
     width:297mm;height:210mm;
     page-break-after:always;break-after:page;
     page-break-inside:avoid;break-inside:avoid;
-    box-sizing:border-box;position:relative;overflow:hidden;
-    background:#fff;
-    -webkit-print-color-adjust:exact;print-color-adjust:exact
+    box-sizing:border-box;position:relative;overflow:hidden;background:#fff;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    font-family:Arial,Helvetica,sans-serif
   }
-  .print-slide:last-child{page-break-after:auto;break-after:auto}
-  .ps-title-bar{
-    position:absolute;top:0;left:0;right:0;height:18mm;
-    background:#0D9488;display:flex;align-items:center;
-    padding:0 13mm;font-family:Arial,sans-serif;
-    font-size:10pt;font-weight:700;color:#fff;
-    letter-spacing:.08em;text-transform:uppercase
+  .print-page:last-child{page-break-after:auto;break-after:auto}
+
+  /* Accent bars */
+  .pc-top-bar{position:absolute;top:0;left:0;right:0;height:5.5mm;background:#0D9488}
+  .pc-bottom-bar{position:absolute;bottom:0;left:0;right:0;height:3mm;background:#0D9488}
+
+  /* ── Cover ── */
+  .print-cover .pc-body{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:0 22mm
   }
-  .ps-headline{
-    position:absolute;top:22mm;left:13mm;right:13mm;
-    font-family:Arial,sans-serif;font-size:22pt;font-weight:700;
-    color:#1C2B2B;line-height:1.2
+  .pc-brand{font-size:8pt;font-weight:700;color:#0D9488;letter-spacing:.25em;text-transform:uppercase;margin-bottom:9mm}
+  .pc-title{font-size:28pt;font-weight:700;color:#1C2B2B;line-height:1.15;margin-bottom:5mm;max-width:200mm}
+  .pc-tagline{font-size:11.5pt;color:#6B8F8F;font-style:italic;margin-bottom:10mm}
+  .pc-rule{width:18mm;height:.8mm;background:#0D9488;margin-bottom:6mm}
+  .pc-meta{font-size:8.5pt;color:#6B8F8F}
+  .print-cover .pc-bottom-right{position:absolute;bottom:10mm;right:22mm;font-size:7.5pt;color:#AAAAAA}
+
+  /* ── Content pages ── */
+  .print-grid{
+    position:absolute;top:5.5mm;left:0;right:0;bottom:10mm;
+    display:grid;grid-template-columns:1fr 1fr
   }
-  .ps-body{
-    position:absolute;top:60mm;left:13mm;right:13mm;
-    font-family:Arial,sans-serif;font-size:11pt;font-weight:400;
-    color:#1C2B2B;line-height:1.6
+  .print-col-divider{display:none}
+  .print-section{
+    padding:10mm 14mm 6mm;border-right:.3mm solid #E2E8E8;
+    display:flex;flex-direction:column;gap:2.5mm;overflow:hidden
   }
-  .ps-bullets{
-    position:absolute;top:88mm;left:13mm;right:13mm
+  .print-section:last-child{border-right:none}
+
+  .pss-label{font-size:7pt;font-weight:700;color:#0D9488;letter-spacing:.14em;text-transform:uppercase}
+  .pss-rule{height:.4mm;background:#0D9488;opacity:.25;margin:.5mm 0 2mm}
+  .pss-headline{font-size:14.5pt;font-weight:700;color:#1C2B2B;line-height:1.18}
+  .pss-body{font-size:9pt;color:#333;line-height:1.55}
+  .pss-bullets{display:flex;flex-direction:column;gap:1.2mm}
+  .pss-bullet{display:flex;gap:2.5mm;align-items:flex-start;font-size:8.5pt;color:#333;line-height:1.4}
+  .pss-dot{width:3pt;height:3pt;border-radius:50%;background:#0D9488;flex-shrink:0;margin-top:3.5pt}
+  .pss-stat{
+    margin-top:auto;padding:2.5mm 4mm;
+    border-left:3mm solid #0D9488;background:rgba(13,148,136,.07);
+    font-size:8.5pt;font-weight:700;color:#0D9488;line-height:1.35
   }
-  .ps-bullet{
-    font-family:Arial,sans-serif;font-size:10pt;color:#1C2B2B;
-    margin-bottom:3mm;display:flex;gap:4mm;align-items:flex-start
+
+  .print-page-footer{
+    position:absolute;bottom:2.5mm;left:0;right:0;
+    font-size:6.5pt;color:#BBBBBB;text-align:center
   }
-  .ps-bullet-dot{
-    width:4pt;height:4pt;border-radius:50%;background:#0D9488;
-    flex-shrink:0;margin-top:4pt
+
+  /* ── Coach page ── */
+  .print-coach-page .pch-body{
+    position:absolute;top:14mm;left:18mm;right:18mm;bottom:14mm;display:flex;flex-direction:column;gap:6mm
   }
-  .ps-stat{
-    position:absolute;bottom:18mm;left:13mm;
-    background:#0D9488;color:#fff;
-    font-family:Arial,sans-serif;font-size:11pt;font-weight:700;
-    padding:3mm 6mm;border-radius:2mm;max-width:140mm
+  .pch-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:4mm;border-bottom:.4mm solid #E2E8E8}
+  .pch-header-left{}
+  .pch-eyebrow{font-size:7.5pt;font-weight:700;color:#0D9488;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2mm}
+  .pch-title{font-size:16pt;font-weight:700;color:#1C2B2B}
+  .pch-score-wrap{text-align:right}
+  .pch-score{font-size:34pt;font-weight:700;color:#0D9488;line-height:1}
+  .pch-score-lbl{font-size:7pt;color:#6B8F8F;text-transform:uppercase;letter-spacing:.1em}
+  .pch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm;flex:1}
+  .pch-col-hd{
+    font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+    padding-bottom:2mm;margin-bottom:3mm;border-bottom:.5mm solid currentColor
   }
-  .ps-footer{
-    position:absolute;bottom:6mm;right:13mm;
-    font-family:Arial,sans-serif;font-size:7pt;color:#ccc
+  .pch-col-hd-good{color:#059669}.pch-col-hd-warn{color:#d97706}
+  .pch-item{
+    font-size:9pt;color:#1C2B2B;margin-bottom:2.5mm;
+    padding-left:3.5mm;line-height:1.45;border-left:2mm solid transparent
   }
+  .pch-good{border-left-color:#059669}.pch-warn{border-left-color:#d97706}
 }
 </style>
 </head>
@@ -1132,21 +1165,91 @@ async function downloadPPTX(){
 }
 
 /* ── PDF EXPORT ── */
+function pdfSection(s){
+  if(!s)return'<div class="print-section"></div>';
+  const bullets=(s.bullets||[]).map(b=>`<div class="pss-bullet"><span class="pss-dot"></span><span>${esc(b)}</span></div>`).join('');
+  const stat=s.stat?`<div class="pss-stat">${esc(s.stat)}</div>`:'';
+  return`<div class="print-section">
+    <div class="pss-label">${String(s.id).padStart(2,'0')} · ${esc((s.title||'').toUpperCase())}</div>
+    <div class="pss-rule"></div>
+    <div class="pss-headline">${esc(s.headline||'')}</div>
+    <div class="pss-body">${esc(s.body||'')}</div>
+    ${bullets?`<div class="pss-bullets">${bullets}</div>`:''}
+    ${stat}
+  </div>`;
+}
+
 function downloadPDF(){
   if(!deckData)return;
   const area=document.getElementById('print-area');
-  area.innerHTML=deckData.slides.map(s=>{
-    const bullets=(s.bullets||[]).map(b=>`<div class="ps-bullet"><span class="ps-bullet-dot"></span><span>${esc(b)}</span></div>`).join('');
-    const stat=s.stat?`<div class="ps-stat">${esc(s.stat)}</div>`:'';
-    return`<div class="print-slide">
-      <div class="ps-title-bar">${esc(s.title||'')}</div>
-      <div class="ps-headline">${esc(s.headline||'')}</div>
-      <div class="ps-body">${esc(s.body||'')}</div>
-      ${bullets?`<div class="ps-bullets">${bullets}</div>`:''}
-      ${stat}
-      <div class="ps-footer">BLUPRNT  ·  ${esc(deckData.deck_title||'')}</div>
+  const date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const title=esc(deckData.deck_title||'Pitch Deck');
+  const footer=`<div class="print-page-footer">BLUPRNT · ${title} · Confidential</div>`;
+  let html='';
+
+  // Cover page
+  html+=`<div class="print-page print-cover">
+    <div class="pc-top-bar"></div>
+    <div class="pc-body">
+      <div class="pc-brand">BLUPRNT</div>
+      <div class="pc-title">${title}</div>
+      <div class="pc-tagline">Describe your idea. Get your pitch.</div>
+      <div class="pc-rule"></div>
+      <div class="pc-meta">Prepared ${date}</div>
+    </div>
+    <div class="print-cover .pc-bottom-right">Confidential</div>
+    <div class="pc-bottom-bar"></div>
+  </div>`;
+
+  // Content pages — 2 slides per page
+  const slides=deckData.slides;
+  for(let i=0;i<slides.length;i+=2){
+    html+=`<div class="print-page">
+      <div class="pc-top-bar"></div>
+      <div class="print-grid">
+        ${pdfSection(slides[i])}
+        ${pdfSection(slides[i+1]||null)}
+      </div>
+      ${footer}
     </div>`;
-  }).join('');
+  }
+
+  // AI Coach summary page
+  const coach=deckData.coach;
+  if(coach){
+    const score=coach.overall_score||70;
+    const working=(coach.working||[]).map(w=>`<div class="pch-item pch-good">${esc(w)}</div>`).join('');
+    const watch=(coach.watch||[]).map(w=>`<div class="pch-item pch-warn">${esc(w)}</div>`).join('');
+    html+=`<div class="print-page print-coach-page">
+      <div class="pc-top-bar"></div>
+      <div class="pch-body">
+        <div class="pch-header">
+          <div class="pch-header-left">
+            <div class="pch-eyebrow">AI Pitch Coach</div>
+            <div class="pch-title">Pitch Assessment</div>
+          </div>
+          <div class="pch-score-wrap">
+            <div class="pch-score">${score}</div>
+            <div class="pch-score-lbl">Overall Score</div>
+          </div>
+        </div>
+        <div class="pch-grid">
+          <div>
+            <div class="pch-col-hd pch-col-hd-good">✓ What's Working</div>
+            ${working}
+          </div>
+          <div>
+            <div class="pch-col-hd pch-col-hd-warn">⚠ Watch Out For</div>
+            ${watch}
+          </div>
+        </div>
+      </div>
+      ${footer}
+      <div class="pc-bottom-bar"></div>
+    </div>`;
+  }
+
+  area.innerHTML=html;
   window.print();
 }
 
