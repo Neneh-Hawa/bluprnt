@@ -968,9 +968,9 @@ document.getElementById('btn-new').addEventListener('click',()=>{
 async function loadPptxLib(){
   if(typeof PptxGenJS!=='undefined')return;
   const CDNS=[
-    'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundled.js',
-    'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundled.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundled.js'
+    'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+    'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js'
   ];
   let lastErr='';
   for(const url of CDNS){
